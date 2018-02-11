@@ -3,6 +3,7 @@ package com.evanlennick.retry4j;
 import com.evanlennick.retry4j.config.RetryConfig;
 import com.evanlennick.retry4j.config.RetryConfigBuilder;
 import com.evanlennick.retry4j.exception.RetriesExhaustedException;
+import com.evanlennick.retry4j.exception.UnexpectedException;
 
 import java.net.ConnectException;
 import java.time.Duration;
@@ -65,7 +66,7 @@ public class Main {
 
     /**
      * This is a simple example of a retry situation where all exceptions cause retries and any return value counts as a
-     * success. The call executor uses lambda-style listeners to specify how to behave.
+     * success. This example uses try/catch to detect when an error state has been encountered.
      */
     private static void retryOnAllExceptions_usingExceptions() {
         ResultGenerator<String> generator = new ResultGenerator<>();
@@ -87,6 +88,9 @@ public class Main {
             System.out.println("Status: " + result);
         } catch (RetriesExhaustedException e) {
             System.out.println("Failed! All retries exhausted...");
+        } catch (UnexpectedException e) {
+            System.out.println("Failed! An unexpected exception was encountered...");
+            e.printStackTrace();
         }
     }
 
