@@ -8,6 +8,7 @@ import com.evanlennick.retry4j.exception.UnexpectedException;
 import java.net.ConnectException;
 import java.time.Duration;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 
 public class Main {
 
@@ -123,9 +124,12 @@ public class Main {
                 .afterFailedTry(s -> System.out.println("[" + s.getId() + "] Try failed! Will try again in 250ms."))
                 .beforeNextTry(s -> System.out.println("[" + s.getId() + "] Trying again..."));
 
-        executor.execute(callable1);
-        executor.execute(callable2);
-        executor.execute(callable3);
+        CompletableFuture<Status<String>> result1 = executor.execute(callable1);
+        CompletableFuture<Status<String>> result2 = executor.execute(callable2);
+        CompletableFuture<Status<String>> result3 = executor.execute(callable3);
+
+        CompletableFuture.allOf(result1, result2, result3).join();
+        executor.getThreadExecutorService().shutdown();
     }
 
     /**
