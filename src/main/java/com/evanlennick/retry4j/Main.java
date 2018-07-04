@@ -79,7 +79,6 @@ public class Main {
         RetryConfig config = new RetryConfigBuilder()
                 .retryOnAnyException()
                 .withNoWaitBackoff()
-                .withDelayBetweenTries(Duration.ZERO) //TODO shouldnt have to specify this, see issue #50
                 .withMaxNumberOfTries(10)
                 .build();
 
@@ -129,7 +128,6 @@ public class Main {
         CompletableFuture<Status<String>> result3 = executor.execute(callable3);
 
         CompletableFuture.allOf(result1, result2, result3).join();
-        executor.getThreadExecutorService().shutdown();
     }
 
     /**
