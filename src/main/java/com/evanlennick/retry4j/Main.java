@@ -27,11 +27,13 @@ public class Main {
                 .fixedBackoff5Tries10Sec()
                 .build();
 
-        new CallExecutor<String>(config)
-                .onSuccess(s -> {
+        new CallExecutorBuilder<String>()
+                .config(config)
+                .onSuccessListener(s -> {
                     System.out.println("Status: " + s);
                 })
-                .onFailure(s -> System.out.println("Failed! All retries exhausted..."))
+                .onFailureListener(s -> System.out.println("Failed! All retries exhausted..."))
+                .build()
                 .execute(callable);
     }
 
@@ -53,15 +55,17 @@ public class Main {
                 .withMaxNumberOfTries(10)
                 .build();
 
-        new CallExecutor<String>(config)
-                .onSuccess(s -> {
+        new CallExecutorBuilder<String>()
+                .config(config)
+                .onSuccessListener(s -> {
                     System.out.println("Success!");
                     System.out.println("Status: " + s);
                 })
-                .onCompletion(s -> System.out.println("Retry execution complete!"))
-                .onFailure(s -> System.out.println("Failed! All retries exhausted..."))
-                .afterFailedTry(s -> System.out.println("Try failed! Will try again in 0ms."))
-                .beforeNextTry(s -> System.out.println("Trying again..."))
+                .onCompletionListener(s -> System.out.println("Retry execution complete!"))
+                .onFailureListener(s -> System.out.println("Failed! All retries exhausted..."))
+                .afterFailedTryListener(s -> System.out.println("Try failed! Will try again in 0ms."))
+                .beforeNextTryListener(s -> System.out.println("Trying again..."))
+                .build()
                 .execute(callable);
     }
 
@@ -83,7 +87,7 @@ public class Main {
                 .build();
 
         try {
-            Status<String> result = new CallExecutor<String>(config).execute(callable);
+            Status<String> result = new CallExecutorBuilder<String>().config(config).build().execute(callable);
             System.out.println("Success!");
             System.out.println("Status: " + result);
         } catch (RetriesExhaustedException e) {
@@ -113,15 +117,17 @@ public class Main {
                 .withMaxNumberOfTries(5)
                 .build();
 
-        AsyncCallExecutor<String> executor = new AsyncCallExecutor<String>(config)
-                .onSuccess(s -> {
+        AsyncCallExecutor<String> executor = new CallExecutorBuilder<String>()
+                .config(config)
+                .onSuccessListener(s -> {
                     System.out.println("[" + s.getId() + "] Success!");
                     System.out.println("[" + s.getId() + "] Status: " + s);
                 })
-                .onCompletion(s -> System.out.println("[" + s.getId() + "] Retry execution complete!"))
-                .onFailure(s -> System.out.println("[" + s.getId() + "] Failed!"))
-                .afterFailedTry(s -> System.out.println("[" + s.getId() + "] Try failed! Will try again in 250ms."))
-                .beforeNextTry(s -> System.out.println("[" + s.getId() + "] Trying again..."));
+                .onCompletionListener(s -> System.out.println("[" + s.getId() + "] Retry execution complete!"))
+                .onFailureListener(s -> System.out.println("[" + s.getId() + "] Failed!"))
+                .afterFailedTryListener(s -> System.out.println("[" + s.getId() + "] Try failed! Will try again in 250ms."))
+                .beforeNextTryListener(s -> System.out.println("[" + s.getId() + "] Trying again..."))
+                .buildAsync();
 
         CompletableFuture<Status<String>> result1 = executor.execute(callable1);
         CompletableFuture<Status<String>> result2 = executor.execute(callable2);
@@ -151,15 +157,18 @@ public class Main {
                 .withMaxNumberOfTries(5)
                 .build();
 
-        new CallExecutor<String>(config)
-                .onSuccess(s -> {
+        new CallExecutorBuilder<String>()
+                .config(config)
+                .onSuccessListener(s -> {
                     System.out.println("Success!");
                     System.out.println("Status: " + s);
                 })
-                .onCompletion(s -> System.out.println("Retry execution complete!"))
-                .onFailure(s -> System.out.println("Failed!"))
-                .afterFailedTry(s -> System.out.println("Try failed! Will try again in 250ms."))
-                .beforeNextTry(s -> System.out.println("Trying again..."))
+                .onCompletionListener(s -> System.out.println("Retry execution complete!"))
+                .onFailureListener(s -> System.out.println("Failed!"))
+                .afterFailedTryListener(s -> System.out.println("Try failed! Will try again in 250ms."))
+                .beforeNextTryListener(s -> System.out.println("Trying again..."))
+                .build()
                 .execute(callable);
+
     }
 }
